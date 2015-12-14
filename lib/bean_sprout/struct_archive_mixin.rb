@@ -10,7 +10,6 @@ module BeanSprout
     def archive_in_glass_jar glass_jar, id
       @glass_jar = glass_jar
       @id = id
-      values.each do |val| val.freeze end
       freeze
     end
   end

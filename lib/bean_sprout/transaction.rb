@@ -15,6 +15,10 @@ module BeanSprout
     def balanced!
       raise "#{@entries} is not balanced." unless balanced?
     end
+
+    def entries
+      super.clone
+    end
   end
 end
 
