@@ -7,7 +7,7 @@ module BeanSprout
     def balanced?
       balance = 0
       entries.each do |entry|
-        balance += entry.amount / entry.rate_or_one
+        balance += entry.accurate_amount / entry.rate_or_one
       end
       balance == 0
     end

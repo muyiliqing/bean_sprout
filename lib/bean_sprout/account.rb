@@ -14,7 +14,7 @@ module BeanSprout
 
     def append_entry entry
       @entries <<= entry
-      @balances <<= balance + entry.amount
+      @balances <<= balance + entry.accurate_amount
     end
 
     def entries

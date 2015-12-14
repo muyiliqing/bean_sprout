@@ -50,6 +50,7 @@ module BeanSprout
         raise "Creating transaction with too many entries."
       end
 
+      # Validate trans status.
       trans.entries.each do |entry|
         valid_account! entry.account
         valid_rate! entry
