@@ -5,7 +5,7 @@ module BeanSprout
     end
 
     module ClassMethods
-      def self.from_hash hash
+      def from_hash hash
         new(*hash.values_at(*members))
       end
     end
