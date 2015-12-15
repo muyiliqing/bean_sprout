@@ -13,8 +13,8 @@ module BeanSprout
     end
 
     def append_entry entry
-      @entries <<= entry
-      @balances <<= balance + entry.accurate_amount
+      @entries.push entry
+      @balances.push balance + entry.accurate_amount
     end
 
     def entries

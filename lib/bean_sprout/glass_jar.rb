@@ -15,7 +15,7 @@ module BeanSprout
     end
 
     def create_account account
-      account.archive_in_glass_jar self, account_id
+      account.archive_in_glass_jar self, next_account_id
       @accounts[account.id] = account
     end
 
@@ -43,7 +43,7 @@ module BeanSprout
       @entries[id]
     end
 
-    AccountEntitySizeBits = 20
+    AccountEntitySizeBits = 30
     def commit_transaction trans
       raise "Creating transaction with no entries." if trans.entries.empty?
       if trans.entries.size >= (1 << AccountEntitySizeBits)
@@ -57,6 +57,7 @@ module BeanSprout
       end
       trans.balanced!
 
+      trans.archive_in_glass_jar self, next_transaction_id
       trans.entries.each_with_index do |entry, index|
         entry_id = (trans.id << AccountEntitySizeBits) + index
         entry.archive_in_glass_jar self, entry_id
@@ -64,7 +65,6 @@ module BeanSprout
         @entries[entry_id] = entry
         account(entry.account).append_entry(entry)
       end
-      trans.archive_in_glass_jar self, next_transaction_id
       @transactions[trans.id] = trans
     end
 
