@@ -1,6 +1,7 @@
 require 'bean_sprout/struct_from_hash_mixin'
 require 'bean_sprout/struct_archive_mixin'
-require 'bean_sprout/utils'
+require 'bigdecimal'
+require 'bigdecimal/util'
 
 module BeanSprout
   # AccountingEntry is made up of the following fields:
@@ -18,7 +19,7 @@ module BeanSprout
     end
 
     def accurate_amount
-      @accurate_amount ||= BeanSprout::Utils.to_bigdecimal(amount)
+      @accurate_amount ||= amount.to_d
     end
   end
 end
