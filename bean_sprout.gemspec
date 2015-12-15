@@ -21,6 +21,6 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency 'minitest', '~> 5.8', '>= 5.8.1'
 
-  s.homepage    = 'http://github.com/muyiliqing/feidee_utils'
+  s.homepage    = 'http://github.com/muyiliqing/bean_sprout'
   s.license     = 'MIT'
 end
