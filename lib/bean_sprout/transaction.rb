@@ -2,6 +2,7 @@ require 'bean_sprout/struct_archive_mixin'
 
 module BeanSprout
   class Transaction < Struct.new(:entries, :other_data)
+    include StructFromHashMixin
     include StructArchiveMixin
 
     alias entries_data entries
