@@ -1,5 +1,7 @@
 module BeanSprout
   class GlassJar
+    # TODO: maybe each transaction can have its own
+    # currency.
     attr_reader :base_currency
 
     def initialize base_currency
