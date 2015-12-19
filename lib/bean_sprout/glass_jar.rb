@@ -23,6 +23,8 @@ module BeanSprout
       @accounts.values
     end
 
+    # External ID is not supported. Clients must implement
+    # external ID to internal ID mapping.
     def account id
       @accounts[id]
     end
