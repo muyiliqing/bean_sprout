@@ -6,15 +6,18 @@ module BeanSprout
     include StructFromHashMixin
     include StructArchiveMixin
 
+    class BalanceHolder < Struct.new(:value)
+    end
+
     def initialize *fields
       super *fields
       @entries = []
-      @balances = [0]
+      @balance = BalanceHolder.new(0)
     end
 
     def append_entry entry
       @entries.push entry
-      @balances.push balance + entry.accurate_amount
+      @balance.value += entry.accurate_amount
     end
 
     def entries
@@ -22,7 +25,7 @@ module BeanSprout
     end
 
     def balance
-      @balances.last
+      @balance.value
     end
   end
 end
