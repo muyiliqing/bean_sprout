@@ -9,7 +9,6 @@ module BeanSprout
 
       @accounts = {}
       @account_id = 0
-      @account_external_ids = {}
 
       @transactions = {}
       @transaction_id = 0
@@ -20,11 +19,10 @@ module BeanSprout
     def open_account account
       account.archive_in_glass_jar self, next_account_id
       @accounts[account.id] = account
-      @account_external_ids[account.external_id] = account
     end
 
-    def create_account currency, external_id = nil, other_data: nil
-      account = Account.new currency, external_id, other_data
+    def create_account currency, other_data: nil
+      account = Account.new currency, other_data
       open_account account
     end
 
@@ -32,12 +30,10 @@ module BeanSprout
       @accounts.values
     end
 
+    # External ID is not supported. Clients must implement
+    # external ID to internal ID mapping.
     def account id
       @accounts[id]
-    end
-
-    def account_for external_id
-      @account_external_ids[external_id]
     end
 
     def transactions
