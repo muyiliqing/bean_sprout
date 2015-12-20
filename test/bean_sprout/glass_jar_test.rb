@@ -15,6 +15,12 @@ class BeanSprout::GlassJar::Test < MiniTest::Test
     @glass_jar.open_account @usd_account
   end
 
+  def test_new_helper_methods
+    assert @glass_jar.new_account.is_a? BeanSprout::Account
+    assert @glass_jar.new_transaction.is_a? BeanSprout::Transaction
+    assert @glass_jar.new_entry.is_a? BeanSprout::Entry
+  end
+
   def test_account_id
     assert_equal @account.id, 1
     assert_equal @usd_account.id, 2

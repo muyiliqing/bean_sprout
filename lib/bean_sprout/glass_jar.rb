@@ -86,6 +86,18 @@ module BeanSprout
       commit_transaction(trans)
     end
 
+    def new_account *args
+      Account.new args
+    end
+
+    def new_transaction *args
+      Transaction.new args
+    end
+
+    def new_entry *args
+      Entry.new args
+    end
+
     private
     def next_account_id
       @account_id += 1
