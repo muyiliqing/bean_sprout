@@ -32,6 +32,11 @@ class BeanSprout::GlassJar::Test < MiniTest::Test
     end
   end
 
+  def test_account_external_id
+    account_external = @glass_jar.create_account BeanSprout::Account.new "A", 3
+    assert_equal @glass_jar.account_for(3), account_external
+  end
+
   # TODO: make this better using stubbing.
   def test_accessors
     assert_equal @account, @glass_jar.account(1)

@@ -9,6 +9,7 @@ module BeanSprout
 
       @accounts = {}
       @account_id = 0
+      @account_external_ids = {}
 
       @transactions = {}
       @transaction_id = 0
@@ -19,16 +20,19 @@ module BeanSprout
     def create_account account
       account.archive_in_glass_jar self, next_account_id
       @accounts[account.id] = account
+      @account_external_ids[account.external_id] = account
     end
 
     def accounts
       @accounts.values
     end
 
-    # External ID is not supported. Clients must implement
-    # external ID to internal ID mapping.
     def account id
       @accounts[id]
+    end
+
+    def account_for external_id
+      @account_external_ids[external_id]
     end
 
     def transactions
