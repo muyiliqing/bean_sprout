@@ -8,8 +8,8 @@ class BeanSprout::GlassJar::Test < MiniTest::Test
     @glass_jar = BeanSprout::GlassJar.new("AUD")
     @account = BeanSprout::Account.new "AUD"
     @usd_account = BeanSprout::Account.new "USD"
-    @entry = BeanSprout::AccountingEntry.new 1, 16
-    @usd_entry = BeanSprout::AccountingEntry.new 2, -8, 0.5
+    @entry = BeanSprout::Entry.new 1, 16
+    @usd_entry = BeanSprout::Entry.new 2, -8, 0.5
 
     @glass_jar.create_account @account
     @glass_jar.create_account @usd_account
@@ -80,13 +80,13 @@ class BeanSprout::GlassJar::Test < MiniTest::Test
     end
     assert_match /^Creating transaction with no entries\.$/, e.message
 
-    invalid_account_entry = BeanSprout::AccountingEntry.new 3, 0
+    invalid_account_entry = BeanSprout::Entry.new 3, 0
     e = assert_raises do
       @glass_jar.create_transaction invalid_account_entry
     end
     assert_match /^Unkown account 3 refered\.$/, e.message
 
-    invalid_rate_entry = BeanSprout::AccountingEntry.new 2, 16
+    invalid_rate_entry = BeanSprout::Entry.new 2, 16
     e = assert_raises do
       @glass_jar.create_transaction invalid_rate_entry
     end
@@ -113,10 +113,10 @@ class BeanSprout::GlassJar::Test < MiniTest::Test
     @glass_jar.send :"valid_rate!", @entry
     @glass_jar.send :"valid_rate!", @usd_entry
 
-    valid_entry = BeanSprout::AccountingEntry.new 1, 18, 1
+    valid_entry = BeanSprout::Entry.new 1, 18, 1
     @glass_jar.send :"valid_rate!", valid_entry
 
-    invalid_entry = BeanSprout::AccountingEntry.new 2, 16
+    invalid_entry = BeanSprout::Entry.new 2, 16
     e = assert_raises do
       @glass_jar.send :"valid_rate!", invalid_entry
     end

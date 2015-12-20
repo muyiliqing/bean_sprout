@@ -4,13 +4,13 @@ require 'bigdecimal'
 require 'bigdecimal/util'
 
 module BeanSprout
-  # AccountingEntry is made up of the following fields:
+  # Entry is made up of the following fields:
   # 1. The account owns the entry, the currency of which is defined as the local
   # currency;
   # 2. The amount to be added to the account balance, in local currency;
   # 3. Convention rate from local currency to the base currency;
   # 4. Other arbitrary data.
-  class AccountingEntry < Struct.new(:account, :amount, :rate, :other_data)
+  class Entry < Struct.new(:account, :amount, :rate, :other_data)
     include StructFromHashMixin
     include StructArchiveMixin
 
