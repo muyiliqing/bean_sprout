@@ -11,8 +11,8 @@ class BeanSprout::GlassJar::Test < MiniTest::Test
     @entry = BeanSprout::Entry.new 1, 16
     @usd_entry = BeanSprout::Entry.new 2, -8, 0.5
 
-    @glass_jar.create_account @account
-    @glass_jar.create_account @usd_account
+    @glass_jar.open_account @account
+    @glass_jar.open_account @usd_account
   end
 
   def test_account_id
@@ -20,7 +20,7 @@ class BeanSprout::GlassJar::Test < MiniTest::Test
     assert_equal @usd_account.id, 2
     for i in 3..100 do
       account = @account.dup
-      account = @glass_jar.create_account(account)
+      account = @glass_jar.open_account(account)
       assert_equal i, account.id
     end
   end
@@ -33,7 +33,7 @@ class BeanSprout::GlassJar::Test < MiniTest::Test
   end
 
   def test_account_external_id
-    account_external = @glass_jar.create_account BeanSprout::Account.new "A", 3
+    account_external = @glass_jar.open_account BeanSprout::Account.new "A", 3
     assert_equal @glass_jar.account_for(3), account_external
   end
 

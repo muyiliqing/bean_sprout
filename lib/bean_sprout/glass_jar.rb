@@ -17,10 +17,15 @@ module BeanSprout
       @entries = {}
     end
 
-    def create_account account
+    def open_account account
       account.archive_in_glass_jar self, next_account_id
       @accounts[account.id] = account
       @account_external_ids[account.external_id] = account
+    end
+
+    def create_account currency, external_id = nil, other_data: nil
+      account = Account.new currency, external_id, other_data
+      open_account account
     end
 
     def accounts
