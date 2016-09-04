@@ -2,74 +2,140 @@ require 'bean_sprout/transaction'
 require 'minitest/autorun'
 
 class BeanSprout::Transaction::Test < MiniTest::Test
-  class TestEntry < Struct.new(:accurate_amount, :rate_or_one)
+  class TestBean < Struct.new(:picked, :grown)
+    def pick sprout
+      picked.push sprout
+    end
+
+    def grow sprout
+      grown.push sprout
+    end
+  end
+
+  class TestSprout < Struct.new(:unified_amount, :bean)
+  end
+
+  def setup
+    @bean = TestBean.new([], [])
+    @sprout0 = TestSprout.new(9, @bean)
+    @sprout1 = TestSprout.new(-8, @bean)
+    @sprout2 = TestSprout.new(-1, @bean)
+    @sprouts = [@sprout0, @sprout1, @sprout2]
+
+    @empty_bunch = BeanSprout::SproutBunch.new(1, [])
+    @sprout_bunch = BeanSprout::SproutBunch.new(1, @sprouts)
+    @unbalanced_bunch = BeanSprout::SproutBunch.new(2, [@sprout0, @sprout1])
+
+    @empty_trans = @empty_bunch.to_transaction
+    @transaction = @sprout_bunch.to_transaction
+  end
+
+  def test_sprout_bunch_balanced
+    assert @empty_bunch.balanced?
+    assert @sprout_bunch.balanced?
+    refute @unbalanced_bunch.balanced?
+
+    # Should not throw.
+    @empty_bunch.balanced!
+    @sprout_bunch.balanced!
+
+    # Should throw.
+    e = assert_raises BeanSprout::SproutBunch::NotBalancedError do
+      @unbalanced_bunch.balanced!
+    end
+    assert_match (/^\[.*\] not balanced\.$/), e.message
+  end
+
+  def test_sprout_bunch_plant
+    @sprout_bunch.plant
+    assert_empty @bean.picked
+    assert_equal @sprouts, @bean.grown
+  end
+
+  def test_sprout_bunch_plant_error
+    e = assert_raises BeanSprout::SproutBunch::NotBalancedError do
+      @unbalanced_bunch.plant
+    end
+
+    @empty_bunch.plant
+    e = assert_raises BeanSprout::SproutBunch::IllegalStateError do
+      @empty_bunch.plant
+    end
+  end
+
+  def test_sprout_bunch_remove_error
+    e = assert_raises BeanSprout::SproutBunch::NotBalancedError do
+      @unbalanced_bunch.remove
+    end
+
+    e = assert_raises BeanSprout::SproutBunch::IllegalStateError do
+      @empty_bunch.remove
+    end
+  end
+
+  def test_sprout_bunch_remove
+    @sprout_bunch.plant
+    @sprout_bunch.remove
+    assert_equal @sprouts, @bean.picked
+    assert_equal @sprouts, @bean.grown
+  end
+
+  def test_sprout_bunch_to_transaction
+    assert @transaction.instance_of? BeanSprout::Transaction
+  end
+
+  def test_sprout_bunch_other_data
+    sprout_bunch = BeanSprout::SproutBunch.new(1, [], "other_data")
+    assert_equal "other_data", sprout_bunch.other_data
+  end
+
+  def test_transaction_api
+    assert @transaction.respond_to? :balanced?
+    assert @transaction.respond_to? :commit
+    assert @transaction.respond_to? :revert
+    assert @transaction.respond_to? :entries
+    assert @transaction.respond_to? :other_data
+
+    refute @transaction.respond_to? :balanced!
+    refute @transaction.respond_to? :plant
+    refute @transaction.respond_to? :remove
+    refute @transaction.respond_to? :sprout
   end
 
   def test_entries
-    trans = BeanSprout::Transaction.new([])
+    assert_empty @empty_trans.entries
 
-    trans.entries.push "1"
-    assert_equal [], trans.entries
+    @empty_trans.entries.push "1"
+    assert_empty @empty_trans.entries
   end
 
-  def test_entries_data
-    trans = BeanSprout::Transaction.new([])
-    assert_raises NoMethodError do
-      trans.entries_data
-    end
-  end
-
-  def test_balanced_empty
-    trans = BeanSprout::Transaction.new([])
-
-    assert trans.balanced?
-    trans.balanced!
-  end
-
-  def test_balanced
-    trans = BeanSprout::Transaction.new(
-      [ TestEntry.new(13, 1), TestEntry.new(-13, 1), ]
-    )
-
-    assert trans.balanced?
-    trans.balanced!
-
-    trans = BeanSprout::Transaction.new(
-      [
-        TestEntry.new(13, 1),
-        TestEntry.new(-20, 1),
-        TestEntry.new(14, 2),
-      ]
-    )
-
-    assert trans.balanced?
-    trans.balanced!
-  end
-
-  def test_balanced_raise
-    trans = BeanSprout::Transaction.new(
-      [
-        TestEntry.new(13, 1),
-        TestEntry.new(-20, 1),
-      ]
-    )
-    refute trans.balanced?
+  def test_commit
     e = assert_raises RuntimeError do
-      trans.balanced!
+      @unbalanced_bunch.to_transaction.commit
     end
-    assert_match (/^\[.*\] is not balanced\.$/), e.message
+    assert_match (/^Cannot commit an imbalance transaction\.$/), e.message
 
-    trans = BeanSprout::Transaction.new(
-      [
-        TestEntry.new(13, 1),
-        TestEntry.new(-20, 2),
-      ]
-    )
-    refute trans.balanced?
+    @empty_trans.commit
     e = assert_raises RuntimeError do
-      trans.balanced!
+      @empty_trans.commit
     end
-    assert_match (/^\[.*\] is not balanced\.$/), e.message
+    assert_match (/^Cannot commit a transaction more than once\.$/), e.message
+
+    @transaction.commit
+  end
+
+  def test_revert
+    e = assert_raises RuntimeError do
+      @unbalanced_bunch.to_transaction.revert
+    end
+    assert_match (/^Cannot revert an imbalance transaction\.$/), e.message
+
+    e = assert_raises RuntimeError do
+      @empty_trans.revert
+    end
+    assert_match (/^Cannot revert a transaction more than once\.$/), e.message
+
+    @sprout_bunch.instance_variable_set(:@in_place, true)
+    @transaction.revert
   end
 end
-
