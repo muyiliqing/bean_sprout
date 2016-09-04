@@ -1,5 +1,4 @@
-require 'bean_sprout/struct_from_hash_mixin'
-require 'bean_sprout/struct_archive_mixin'
+require 'bean_sprout/forwardable_delegate'
 require 'bigdecimal'
 require 'bigdecimal/util'
 
@@ -8,18 +7,33 @@ module BeanSprout
   # 1. The account owns the entry, the currency of which is defined as the local
   # currency;
   # 2. The amount to be added to the account balance, in local currency;
-  # 3. Convention rate from local currency to the base currency;
-  # 4. Other arbitrary data.
-  class Entry < Struct.new(:account, :amount, :rate, :other_data)
-    include StructFromHashMixin
-    include StructArchiveMixin
+  # 3. Other arbitrary data.
+  class Sprout
+    attr_reader :id, :bean, :amount, :other_data
 
-    def rate_or_one
-      rate or 1
+    def initialize id, bean, amount, other_data = nil
+      @id = id
+      @bean = bean
+      @amount = amount.to_d
+      @other_data = other_data
     end
 
-    def accurate_amount
-      @accurate_amount ||= amount.to_d
+    def unified_amount
+      amount * bean.rate
+    end
+
+    def to_entry
+      Entry.new(self)
+    end
+  end
+
+  # Public Interface.
+  class Entry < ForwardableDelegate
+    def_default_delegators :amount, :unified_amount, :other_data
+    def_private_default_delegators :bean
+
+    def account
+      bean.to_account
     end
   end
 end
