@@ -82,6 +82,7 @@ module BeanSprout
     end
 
     # TODO: implement transfer.
+    # TODO: implement dummpy account.
 
     private
     def get_target obj
