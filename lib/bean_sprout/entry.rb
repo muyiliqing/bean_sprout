@@ -7,7 +7,8 @@ module BeanSprout
   # 1. The account owns the entry, the currency of which is defined as the local
   # currency;
   # 2. The amount to be added to the account balance, in local currency;
-  # 3. Other arbitrary data.
+  # 3. Convention rate from local currency to the base currency;
+  # 4. Other arbitrary data.
   class Sprout
     attr_reader :id, :bean, :amount, :rate, :other_data
 
