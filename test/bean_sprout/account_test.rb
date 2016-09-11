@@ -13,7 +13,7 @@ class BeanSprout::Account::Test < MiniTest::Test
       end
     end
 
-    @bean = BeanSprout::Bean.new(0, "CNY", 1.2)
+    @bean = BeanSprout::Bean.new(0, "CNY")
     @sprout = sprout_class.new(13)
     @sprout2 = sprout_class.new(-9)
 
@@ -60,17 +60,8 @@ class BeanSprout::Account::Test < MiniTest::Test
     assert_equal "CNY", @bean.currency
   end
 
-  def test_bean_rate
-    assert_equal 1.2, @bean.rate
-  end
-
-  def test_bean_default_rate
-    bean = BeanSprout::Bean.new(0, "CNY")
-    assert_equal 1, bean.rate
-  end
-
   def test_bean_other_data
-    bean = BeanSprout::Bean.new(0, "CNY", 1.2, "this is a string")
+    bean = BeanSprout::Bean.new(0, "CNY", "this is a string")
     assert_equal "this is a string", bean.other_data
   end
 
@@ -83,7 +74,6 @@ class BeanSprout::Account::Test < MiniTest::Test
     assert @account.respond_to? :entries
     assert @account.respond_to? :balance
     assert @account.respond_to? :currency
-    assert @account.respond_to? :rate
     assert @account.respond_to? :other_data
 
     refute @account.respond_to? :to_account

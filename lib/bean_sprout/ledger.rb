@@ -15,27 +15,28 @@ module BeanSprout
       @sprouts = SparseArray.new
     end
 
-    def create_account currency, rate = nil, other_data = nil
-      if not (rate or currency == base_currency)
-        raise "Rate must be specified if account is not in base currency " +
-          "#{base_currency}."
-      end
-      rate ||= 1
-
+    def create_account currency, other_data = nil
       bean = @beans.store do |next_id|
-        Bean.new(next_id, currency, rate, other_data)
+        Bean.new(next_id, currency, other_data)
       end
       bean.to_account
     end
 
-    def create_entry account, amount, other_data = nil
+    def create_entry account, amount, rate = nil, other_data = nil
       bean = get_target account
       if not @beans.has_key? bean.id
         raise "Unkown account #{bean.to_account} refered."
       end
 
+      if not (rate or bean.currency == base_currency)
+        raise "Rate must be specified if account is not in base currency " +
+          "#{base_currency}."
+      end
+      rate ||= 1
+
+
       sprout = @sprouts.store do |next_id|
-        Sprout.new(next_id, bean, amount, other_data)
+        Sprout.new(next_id, bean, amount, rate, other_data)
       end
 
       sprout.to_entry

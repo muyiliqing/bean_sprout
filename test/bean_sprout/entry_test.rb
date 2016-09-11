@@ -4,7 +4,6 @@ require 'bigdecimal'
 
 class BeanSprout::Entry::Test < MiniTest::Test
   class FakeBean
-    attr_accessor :rate
     def to_account
       self
     end
@@ -12,8 +11,7 @@ class BeanSprout::Entry::Test < MiniTest::Test
 
   def setup
     @bean = FakeBean.new
-    @bean.rate = 2.0
-    @sprout = BeanSprout::Sprout.new(13, @bean, 17)
+    @sprout = BeanSprout::Sprout.new(13, @bean, 17, 2.0)
     @entry = @sprout.to_entry
   end
 
@@ -27,8 +25,17 @@ class BeanSprout::Entry::Test < MiniTest::Test
     sprout = BeanSprout::Sprout.new(1, @bean, 1.9)
     assert_equal BigDecimal.new("1.9"), sprout.amount
 
-    sprout = BeanSprout::Sprout.new(1, @bean, 1000000000000.9)
+    sprout = BeanSprout::Sprout.new(1, @bean, 1000000000000.9, 2.0)
     assert_equal BigDecimal.new("1000000000000.9"), sprout.amount
+  end
+
+  def test_sprout_rate
+    assert_equal 2.0, @sprout.rate
+  end
+
+  def test_sprout_default_rate
+    @sprout = BeanSprout::Sprout.new(13, @bean, 17)
+    assert_equal 1, @sprout.rate
   end
 
   def test_sprout_unified_amount
@@ -36,7 +43,7 @@ class BeanSprout::Entry::Test < MiniTest::Test
   end
 
   def test_sprout_other_data
-    sprout = BeanSprout::Sprout.new(17, @bean, 1, "other data")
+    sprout = BeanSprout::Sprout.new(17, @bean, 1, 1, "other data")
     assert_equal "other data", sprout.other_data
   end
 
@@ -48,6 +55,7 @@ class BeanSprout::Entry::Test < MiniTest::Test
     assert @entry.respond_to? :amount
     assert @entry.respond_to? :unified_amount
     assert @entry.respond_to? :other_data
+    assert @entry.respond_to? :rate
     assert @entry.respond_to? :account
 
     refute @entry.respond_to? :bean

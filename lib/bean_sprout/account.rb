@@ -4,12 +4,11 @@ module BeanSprout
   # TODO: abstract :id? abstract :other_data?
   # TODO: abstract to_account/entry/transaction?
   class Bean
-    attr_reader :id, :balance, :currency, :rate, :sprouts, :other_data
+    attr_reader :id, :balance, :currency, :sprouts, :other_data
 
-    def initialize id, currency, rate = 1, other_data = nil
+    def initialize id, currency, other_data = nil
       @id = id
       @currency = currency
-      @rate = rate
       @other_data = other_data && other_data.clone
       @sprouts = Set.new
       @balance = 0
@@ -32,7 +31,7 @@ module BeanSprout
 
   # Public interface.
   class Account < ForwardableDelegate
-    def_default_delegators :balance, :currency, :rate, :other_data
+    def_default_delegators :balance, :currency, :other_data
     def_private_default_delegators :sprouts
 
     def entries

@@ -11,16 +11,9 @@ class BeanSprout::Ledger::Test < MiniTest::Test
   def test_create_account
     account = @ledger.create_account("AUD")
 
-    e = assert_raises do
-      usd_account = @ledger.create_account("USD")
-    end
+    usd_account = @ledger.create_account("USD")
 
-    assert_match /Rate must be specified if account is not in base currency.*/,
-      e.message
-
-    usd_account = @ledger.create_account("USD", 1.2)
-
-    data_account = @ledger.create_account("AUD", 1, "some data")
+    data_account = @ledger.create_account("AUD", "some data")
     assert_equal "some data", data_account.other_data
 
     beans = @ledger.accounts.map do |acc| get_target acc end
@@ -33,10 +26,14 @@ class BeanSprout::Ledger::Test < MiniTest::Test
 
   def test_create_entry
     account = @ledger.create_account("AUD")
-    entry = @ledger.create_entry(account, 10)
+    entry = @ledger.create_entry(account, 10, 2.0)
 
-    data_entry = @ledger.create_entry account, 1, "some_data"
+    data_entry = @ledger.create_entry account, 1, 1, "some_data"
     assert_equal "some_data", data_entry.other_data
+  end
+
+  def test_create_entry_errors
+    account = @ledger.create_account("AUD")
 
     (account.instance_variable_get :@target).instance_variable_set :@id, 9
 
@@ -45,6 +42,14 @@ class BeanSprout::Ledger::Test < MiniTest::Test
     end
 
     assert_match /^Unkown account .* refered\.$/, e.message
+
+    usd_account = @ledger.create_account("USD")
+    e = assert_raises do
+      @ledger.create_entry(usd_account, 10)
+    end
+
+    assert_match /Rate must be specified if account is not in base currency.*/,
+      e.message
   end
 
   def test_create_transaction

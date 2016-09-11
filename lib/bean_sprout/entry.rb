@@ -9,17 +9,19 @@ module BeanSprout
   # 2. The amount to be added to the account balance, in local currency;
   # 3. Other arbitrary data.
   class Sprout
-    attr_reader :id, :bean, :amount, :other_data
+    attr_reader :id, :bean, :amount, :rate, :other_data
 
-    def initialize id, bean, amount, other_data = nil
+    # Can't specify other_data unless specify rate. Not good syntax.
+    def initialize id, bean, amount, rate = 1, other_data = nil
       @id = id
       @bean = bean
       @amount = amount.to_d
+      @rate = rate
       @other_data = other_data
     end
 
     def unified_amount
-      amount * bean.rate
+      amount * rate
     end
 
     def to_entry
@@ -29,7 +31,7 @@ module BeanSprout
 
   # Public Interface.
   class Entry < ForwardableDelegate
-    def_default_delegators :amount, :unified_amount, :other_data
+    def_default_delegators :amount, :unified_amount, :rate, :other_data
     def_private_default_delegators :bean
 
     def account
