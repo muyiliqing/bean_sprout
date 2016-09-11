@@ -81,6 +81,8 @@ module BeanSprout
       end
     end
 
+    # TODO: implement transfer.
+
     private
     def get_target obj
       obj.instance_variable_get :@target

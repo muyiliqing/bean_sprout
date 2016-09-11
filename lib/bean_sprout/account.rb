@@ -1,6 +1,8 @@
 require 'bean_sprout/forwardable_delegate'
 
 module BeanSprout
+  # TODO: abstract :id? abstract :other_data?
+  # TODO: abstract to_account/entry/transaction?
   class Bean
     attr_reader :id, :balance, :currency, :rate, :sprouts, :other_data
 
