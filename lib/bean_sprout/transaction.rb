@@ -1,5 +1,4 @@
 require 'bean_sprout/forwardable_delegate'
-require 'bean_sprout/struct_archive_mixin'
 
 module BeanSprout
   class SproutBunch
