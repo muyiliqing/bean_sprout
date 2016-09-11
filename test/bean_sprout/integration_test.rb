@@ -8,13 +8,13 @@ class BeanSprout::IntegrationTest < MiniTest::Test
     @usd_account = @ledger.create_account("USD")
     @dummy_account = @ledger.create_account("AUD")
 
-    @entry0 = @ledger.create_entry(@aud_account, 15, 1, "initial deposit")
-    @entry1 = @ledger.create_entry(@dummy_account, -15, 1, "initial deposit")
+    @entry0 = @ledger.create_entry(@aud_account, 15, other_data: "initial deposit")
+    @entry1 = @ledger.create_entry(@dummy_account, -15, other_data: "initial deposit")
 
     @transaction0 = @ledger.create_transaction([@entry0, @entry1])
 
-    @entry2 = @ledger.create_entry(@usd_account, 150, 1.35, "left over") # USD
-    @entry3 = @ledger.create_entry(@dummy_account, -202.5, 1, "left over" ) # AUD
+    @entry2 = @ledger.create_entry(@usd_account, 150, 1.35, other_data: "left over") # USD
+    @entry3 = @ledger.create_entry(@dummy_account, -202.5, other_data: "left over" ) # AUD
 
     @transaction1 = @ledger.create_transaction([@entry2, @entry3])
   end

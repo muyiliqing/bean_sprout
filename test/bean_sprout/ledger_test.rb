@@ -13,7 +13,7 @@ class BeanSprout::Ledger::Test < MiniTest::Test
 
     usd_account = @ledger.create_account("USD")
 
-    data_account = @ledger.create_account("AUD", "some data")
+    data_account = @ledger.create_account("AUD", other_data: "some data")
     assert_equal "some data", data_account.other_data
 
     beans = @ledger.accounts.map do |acc| get_target acc end
@@ -28,7 +28,7 @@ class BeanSprout::Ledger::Test < MiniTest::Test
     account = @ledger.create_account("AUD")
     entry = @ledger.create_entry(account, 10, 2.0)
 
-    data_entry = @ledger.create_entry account, 1, 1, "some_data"
+    data_entry = @ledger.create_entry account, 1, other_data: "some_data"
     assert_equal "some_data", data_entry.other_data
   end
 
@@ -58,7 +58,7 @@ class BeanSprout::Ledger::Test < MiniTest::Test
 
     trans = @ledger.create_transaction [@entry]
 
-    data_trans = @ledger.create_transaction [@entry], "somedata"
+    data_trans = @ledger.create_transaction [@entry], other_data: "somedata"
     assert_equal "somedata", data_trans.other_data
 
     sprout_bunches = @ledger.transactions.map do |trans| get_target trans end

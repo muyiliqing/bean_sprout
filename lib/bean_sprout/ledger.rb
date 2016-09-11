@@ -15,14 +15,14 @@ module BeanSprout
       @sprouts = SparseArray.new
     end
 
-    def create_account currency, other_data = nil
+    def create_account currency, other_data: nil
       bean = @beans.store do |next_id|
         Bean.new(next_id, currency, other_data)
       end
       bean.to_account
     end
 
-    def create_entry account, amount, rate = nil, other_data = nil
+    def create_entry account, amount, rate = nil, other_data: nil
       bean = get_target account
       if not @beans.has_key? bean.id
         raise "Unkown account #{bean.to_account} refered."
@@ -42,7 +42,7 @@ module BeanSprout
       sprout.to_entry
     end
 
-    def create_transaction entries, other_data = nil
+    def create_transaction entries, other_data: nil
       sprouts = entries.map do |entry| get_target entry end
       sprout_bunch = @sprout_bunches.store do |next_id|
         SproutBunch.new(next_id, sprouts, other_data)

@@ -11,7 +11,6 @@ module BeanSprout
   class Sprout
     attr_reader :id, :bean, :amount, :rate, :other_data
 
-    # Can't specify other_data unless specify rate. Not good syntax.
     def initialize id, bean, amount, rate = 1, other_data = nil
       @id = id
       @bean = bean
