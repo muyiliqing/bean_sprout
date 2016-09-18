@@ -12,7 +12,7 @@ class BeanSprout::Entry::Test < MiniTest::Test
   def setup
     @bean = FakeBean.new
     @sprout = BeanSprout::Sprout.new(13, @bean, 17, 2.0)
-    @entry = @sprout.to_entry
+    @entry = BeanSprout::Entry.new(@sprout)
   end
 
   def test_sprout_bean
@@ -40,11 +40,6 @@ class BeanSprout::Entry::Test < MiniTest::Test
 
   def test_sprout_unified_amount
     assert_equal 34, @sprout.unified_amount
-  end
-
-  def test_sprout_other_data
-    sprout = BeanSprout::Sprout.new(17, @bean, 1, 1, "other data")
-    assert_equal "other data", sprout.other_data
   end
 
   def test_sprout_to_entry

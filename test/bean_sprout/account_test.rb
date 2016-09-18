@@ -17,7 +17,7 @@ class BeanSprout::Account::Test < MiniTest::Test
     @sprout = sprout_class.new(13)
     @sprout2 = sprout_class.new(-9)
 
-    @account = @bean.to_account
+    @account = BeanSprout::Account.new(@bean)
   end
 
   def test_bean_grow
@@ -58,11 +58,6 @@ class BeanSprout::Account::Test < MiniTest::Test
 
   def test_bean_currency
     assert_equal "CNY", @bean.currency
-  end
-
-  def test_bean_other_data
-    bean = BeanSprout::Bean.new(0, "CNY", "this is a string")
-    assert_equal "this is a string", bean.other_data
   end
 
   def test_to_account

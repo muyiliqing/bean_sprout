@@ -1,4 +1,4 @@
-require 'bean_sprout/forwardable_delegate'
+require 'bean_sprout/package_private'
 require 'bigdecimal'
 require 'bigdecimal/util'
 
@@ -10,28 +10,26 @@ module BeanSprout
   # 3. Convention rate from local currency to the base currency;
   # 4. Other arbitrary data.
   class Sprout
-    attr_reader :id, :bean, :amount, :rate, :other_data
+    include PackagePrivate::InternalClass
+    attr_reader :id, :bean, :amount, :rate
 
-    def initialize id, bean, amount, rate = 1, other_data = nil
+    define_public_interface :Entry
+
+    def initialize id, bean, amount, rate = 1
       @id = id
       @bean = bean
       @amount = amount.to_d
       @rate = rate
-      @other_data = other_data
     end
 
     def unified_amount
       amount * rate
     end
-
-    def to_entry
-      Entry.new(self)
-    end
   end
 
   # Public Interface.
-  class Entry < ForwardableDelegate
-    def_default_delegators :amount, :unified_amount, :rate, :other_data
+  class Entry < PackagePrivate::PublicInterfaceBase
+    def_default_delegators :amount, :unified_amount, :rate
     def_private_default_delegators :bean
 
     def account

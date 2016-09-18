@@ -1,8 +1,12 @@
-require 'bean_sprout/forwardable_delegate'
+require 'bean_sprout/package_private'
 
 module BeanSprout
   class SproutBunch
-    attr_reader :sprouts, :other_data
+    include PackagePrivate::InternalClass
+
+    attr_reader :sprouts
+
+    define_public_interface :Transaction
 
     class NotBalancedError < StandardError
     end
@@ -10,10 +14,9 @@ module BeanSprout
     class IllegalStateError < StandardError
     end
 
-    def initialize id, sprouts, other_data = nil
+    def initialize id, sprouts
       @id = id
       @sprouts = sprouts
-      @other_data = other_data
     end
 
     def balanced?
@@ -45,14 +48,10 @@ module BeanSprout
       end
       @in_place = false
     end
-
-    def to_transaction
-      Transaction.new(self)
-    end
   end
 
-  class Transaction < ForwardableDelegate
-    def_default_delegators :balanced?, :other_data
+  class Transaction < PackagePrivate::PublicInterfaceBase
+    def_default_delegators :balanced?
     def_private_default_delegators :sprouts, :plant, :remove
 
     def commit

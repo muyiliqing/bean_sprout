@@ -17,9 +17,10 @@ module BeanSprout
 
     def create_account currency, other_data: nil
       bean = @beans.store do |next_id|
-        Bean.new(next_id, currency, other_data)
+        Bean.new(next_id, currency)
       end
-      bean.to_account
+
+      Account.new(bean, other_data)
     end
 
     def create_entry account, amount, rate = nil, other_data: nil
@@ -36,18 +37,19 @@ module BeanSprout
 
 
       sprout = @sprouts.store do |next_id|
-        Sprout.new(next_id, bean, amount, rate, other_data)
+        Sprout.new(next_id, bean, amount, rate)
       end
 
-      sprout.to_entry
+      Entry.new(sprout, other_data)
     end
 
     def create_transaction entries, other_data: nil
       sprouts = entries.map do |entry| get_target entry end
       sprout_bunch = @sprout_bunches.store do |next_id|
-        SproutBunch.new(next_id, sprouts, other_data)
+        SproutBunch.new(next_id, sprouts)
       end
-      sprout_bunch.to_transaction
+
+      Transaction.new(sprout_bunch, other_data)
     end
 
     # TODO: clients can't access ID.

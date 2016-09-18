@@ -1,15 +1,18 @@
-require 'bean_sprout/forwardable_delegate'
+require 'bean_sprout/package_private'
 
 module BeanSprout
-  # TODO: abstract :id? abstract :other_data?
-  # TODO: abstract to_account/entry/transaction?
+  # TODO: abstract :id?
   class Bean
-    attr_reader :id, :balance, :currency, :sprouts, :other_data
+    include PackagePrivate::InternalClass
 
-    def initialize id, currency, other_data = nil
+    attr_reader :id, :balance, :currency, :sprouts
+
+    define_public_interface :Account
+
+    def initialize id, currency
       @id = id
       @currency = currency
-      @other_data = other_data && other_data.clone
+
       @sprouts = Set.new
       @balance = 0
     end
@@ -23,15 +26,11 @@ module BeanSprout
       @sprouts.delete sprout
       @balance -= sprout.amount
     end
-
-    def to_account
-      Account.new(self)
-    end
   end
 
   # Public interface.
-  class Account < ForwardableDelegate
-    def_default_delegators :balance, :currency, :other_data
+  class Account < PackagePrivate::PublicInterfaceBase
+    def_default_delegators :balance, :currency
     def_private_default_delegators :sprouts
 
     def entries

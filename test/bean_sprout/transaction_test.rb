@@ -26,8 +26,9 @@ class BeanSprout::Transaction::Test < MiniTest::Test
     @sprout_bunch = BeanSprout::SproutBunch.new(1, @sprouts)
     @unbalanced_bunch = BeanSprout::SproutBunch.new(2, [@sprout0, @sprout1])
 
-    @empty_trans = @empty_bunch.to_transaction
-    @transaction = @sprout_bunch.to_transaction
+    @unbalanced_trans = BeanSprout::Transaction.new(@unbalanced_bunch)
+    @empty_trans = BeanSprout::Transaction.new(@empty_bunch)
+    @transaction = BeanSprout::Transaction.new(@sprout_bunch)
   end
 
   def test_sprout_bunch_balanced
@@ -84,11 +85,6 @@ class BeanSprout::Transaction::Test < MiniTest::Test
     assert @transaction.instance_of? BeanSprout::Transaction
   end
 
-  def test_sprout_bunch_other_data
-    sprout_bunch = BeanSprout::SproutBunch.new(1, [], "other_data")
-    assert_equal "other_data", sprout_bunch.other_data
-  end
-
   def test_transaction_api
     assert @transaction.respond_to? :balanced?
     assert @transaction.respond_to? :commit
@@ -111,7 +107,7 @@ class BeanSprout::Transaction::Test < MiniTest::Test
 
   def test_commit
     e = assert_raises RuntimeError do
-      @unbalanced_bunch.to_transaction.commit
+      @unbalanced_trans.commit
     end
     assert_match (/^Cannot commit an imbalance transaction\.$/), e.message
 
@@ -126,7 +122,7 @@ class BeanSprout::Transaction::Test < MiniTest::Test
 
   def test_revert
     e = assert_raises RuntimeError do
-      @unbalanced_bunch.to_transaction.revert
+      @unbalanced_trans.revert
     end
     assert_match (/^Cannot revert an imbalance transaction\.$/), e.message
 
