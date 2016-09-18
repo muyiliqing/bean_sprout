@@ -59,28 +59,24 @@ module BeanSprout
 
       entry0 = create_entry from_acc, -amount
       entry1 = create_entry to_acc, amount
-      trans = create_transaction [entry0, entry1]
-      trans.commit
-      trans
+      commit_entries [entry0, entry1]
     end
 
     def base_currency_forex_transfer from_acc, to_acc, from_amount, to_amount
       raise "Amount can't be 0." unless from_amount != 0 && to_amount != 0
 
-      rate0 = rate1 = 1
+      rate0 = rate1 = nil
       if from_acc.currency == @base_currency
-        rate0 = to_amount / from_amount
-      elsif to_acc.currency == @base_currency
         rate1 = from_amount / to_amount
+      elsif to_acc.currency == @base_currency
+        rate0 = to_amount / from_amount
       else
         raise "Forex transfer must be to or from an account of base currency."
       end
 
       entry0 = create_entry from_acc, -from_amount, rate0
       entry1 = create_entry to_acc, to_amount, rate1
-      trans = create_transaction [entry0, entry1]
-      trans.commit
-      trans
+      commit_entries [entry0, entry1]
     end
 
     # TODO: clients can't access ID.
@@ -122,6 +118,12 @@ module BeanSprout
     private
     def get_target obj
       obj.instance_variable_get :@target
+    end
+
+    def commit_entries entries
+      trans = create_transaction entries
+      trans.commit
+      trans
     end
   end
 end
