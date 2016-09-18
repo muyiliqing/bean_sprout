@@ -68,6 +68,57 @@ class BeanSprout::Ledger::Test < MiniTest::Test
     assert sprout_bunches.include? get_target data_trans
   end
 
+  def test_transfer
+    acc0 = @ledger.create_account "AUD"
+    acc1 = @ledger.create_account "AUD"
+    @ledger.transfer acc0, acc1, 100
+    assert_equal -100, acc0.balance
+    assert_equal 100, acc1.balance
+  end
+
+  def test_transfer_error
+    acc0 = @ledger.create_account "USD"
+    acc1 = @ledger.create_account "AUD"
+    e = assert_raises do
+      @ledger.transfer acc0, acc1, 100
+    end
+
+    assert_match /^Cannot transfer between two forex accounts\.$/, e.message
+  end
+
+  def test_base_currency_forex_transfer
+    acc0 = @ledger.create_account "USD"
+    acc1 = @ledger.create_account "AUD"
+    @ledger.base_currency_forex_transfer acc0, acc1, 100, 50
+    assert_equal -100, acc0.balance
+    assert_equal 50, acc1.balance
+  end
+
+  def test_base_currency_forex_transfer_error
+    acc0 = @ledger.create_account "USD"
+    acc1 = @ledger.create_account "AUD"
+    acc2 = @ledger.create_account "CNY"
+    e = assert_raises do
+      @ledger.base_currency_forex_transfer acc0, acc1, 0, 10
+    end
+
+    assert_match /^Amount can't be 0\.$/, e.message
+
+    e = assert_raises do
+      @ledger.base_currency_forex_transfer acc0, acc2, 100, 99
+    end
+
+    assert_match /^Forex transfer must be to or from an account of base currency\.$/,
+      e.message
+  end
+
+  def test_dummy_account
+    acc0 = @ledger.create_account "AUD"
+    @ledger.transfer acc0, (@ledger.dummy_account), 10
+
+    assert_equal -10, acc0.balance
+  end
+
   private
   def get_target obj
     obj.instance_variable_get :@target

@@ -52,6 +52,37 @@ module BeanSprout
       Transaction.new(sprout_bunch, other_data)
     end
 
+    def transfer from_acc, to_acc, amount
+      if from_acc.currency != @base_currency || to_acc.currency != @base_currency
+        raise "Cannot transfer between two forex accounts."
+      end
+
+      entry0 = create_entry from_acc, -amount
+      entry1 = create_entry to_acc, amount
+      trans = create_transaction [entry0, entry1]
+      trans.commit
+      trans
+    end
+
+    def base_currency_forex_transfer from_acc, to_acc, from_amount, to_amount
+      raise "Amount can't be 0." unless from_amount != 0 && to_amount != 0
+
+      rate0 = rate1 = 1
+      if from_acc.currency == @base_currency
+        rate0 = to_amount / from_amount
+      elsif to_acc.currency == @base_currency
+        rate1 = from_amount / to_amount
+      else
+        raise "Forex transfer must be to or from an account of base currency."
+      end
+
+      entry0 = create_entry from_acc, -from_amount, rate0
+      entry1 = create_entry to_acc, to_amount, rate1
+      trans = create_transaction [entry0, entry1]
+      trans.commit
+      trans
+    end
+
     # TODO: clients can't access ID.
     def account id
       @beans.fetch(id).to_account
@@ -84,8 +115,9 @@ module BeanSprout
       end
     end
 
-    # TODO: implement transfer.
-    # TODO: implement dummpy account.
+    def dummy_account
+      @dummy_account ||= create_account @base_currency, other_data: "This is a dummy account."
+    end
 
     private
     def get_target obj
