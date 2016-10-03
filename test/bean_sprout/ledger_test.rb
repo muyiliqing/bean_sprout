@@ -68,6 +68,14 @@ class BeanSprout::Ledger::Test < MiniTest::Test
     assert_equal 100, acc1.balance
   end
 
+  def test_transfer_same_currency
+    acc0 = @ledger.create_account "USD"
+    acc1 = @ledger.create_account "USD"
+    @ledger.transfer acc0, acc1, 100
+    assert_equal -100, acc0.balance
+    assert_equal 100, acc1.balance
+  end
+
   def test_transfer_error
     acc0 = @ledger.create_account "USD"
     acc1 = @ledger.create_account "AUD"

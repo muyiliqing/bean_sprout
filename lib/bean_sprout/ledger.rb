@@ -47,7 +47,7 @@ module BeanSprout
     end
 
     def transfer from_acc, to_acc, amount
-      if from_acc.currency != @base_currency || to_acc.currency != @base_currency
+      if from_acc.currency != to_acc.currency
         raise "Cannot transfer between two forex accounts."
       end
 
