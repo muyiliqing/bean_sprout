@@ -11,7 +11,7 @@ class BeanSprout::Entry::Test < MiniTest::Test
 
   def setup
     @bean = FakeBean.new
-    @sprout = BeanSprout::Sprout.new(13, @bean, 17, 2.0)
+    @sprout = BeanSprout::Sprout.new(13, @bean, 17)
     @entry = BeanSprout::Entry.new(@sprout)
   end
 
@@ -25,21 +25,8 @@ class BeanSprout::Entry::Test < MiniTest::Test
     sprout = BeanSprout::Sprout.new(1, @bean, 1.9)
     assert_equal BigDecimal.new("1.9"), sprout.amount
 
-    sprout = BeanSprout::Sprout.new(1, @bean, 1000000000000.9, 2.0)
+    sprout = BeanSprout::Sprout.new(1, @bean, 1000000000000.9)
     assert_equal BigDecimal.new("1000000000000.9"), sprout.amount
-  end
-
-  def test_sprout_rate
-    assert_equal 2.0, @sprout.rate
-  end
-
-  def test_sprout_default_rate
-    @sprout = BeanSprout::Sprout.new(13, @bean, 17)
-    assert_equal 1, @sprout.rate
-  end
-
-  def test_sprout_unified_amount
-    assert_equal 34, @sprout.unified_amount
   end
 
   def test_sprout_to_entry
@@ -48,9 +35,7 @@ class BeanSprout::Entry::Test < MiniTest::Test
 
   def test_entry_api
     assert @entry.respond_to? :amount
-    assert @entry.respond_to? :unified_amount
     assert @entry.respond_to? :other_data
-    assert @entry.respond_to? :rate
     assert @entry.respond_to? :account
 
     refute @entry.respond_to? :bean

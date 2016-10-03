@@ -20,11 +20,14 @@ module BeanSprout
     end
 
     def balanced?
-      balance = 0
+      balances = Hash.new(0)
       @sprouts.each do |sprout|
-        balance += sprout.unified_amount
+        currency = sprout.bean.currency
+        balances[currency] += sprout.amount
       end
-      balance == 0
+      balances.values.inject(true) do |acc, currency_balance|
+        acc && currency_balance == 0
+      end
     end
 
     def balanced!

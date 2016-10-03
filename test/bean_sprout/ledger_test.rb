@@ -26,7 +26,7 @@ class BeanSprout::Ledger::Test < MiniTest::Test
 
   def test_create_entry
     account = @ledger.create_account("AUD")
-    entry = @ledger.create_entry(account, 10, 2.0)
+    entry = @ledger.create_entry(account, 10)
 
     data_entry = @ledger.create_entry account, 1, other_data: "some_data"
     assert_equal "some_data", data_entry.other_data
@@ -42,14 +42,6 @@ class BeanSprout::Ledger::Test < MiniTest::Test
     end
 
     assert_match /^Unkown account .* refered\.$/, e.message
-
-    usd_account = @ledger.create_account("USD")
-    e = assert_raises do
-      @ledger.create_entry(usd_account, 10)
-    end
-
-    assert_match /Rate must be specified if account is not in base currency.*/,
-      e.message
   end
 
   def test_create_transaction
@@ -89,27 +81,18 @@ class BeanSprout::Ledger::Test < MiniTest::Test
   def test_base_currency_forex_transfer
     acc0 = @ledger.create_account "USD"
     acc1 = @ledger.create_account "AUD"
-    @ledger.base_currency_forex_transfer acc0, acc1, 50, 100
+    @ledger.forex_transfer acc0, acc1, 50, 100
     assert_equal -50, acc0.balance
     assert_equal 100, acc1.balance
   end
 
-  def test_base_currency_forex_transfer_error
+  def test_non_base_currency_forex_transfer
     acc0 = @ledger.create_account "USD"
-    acc1 = @ledger.create_account "AUD"
-    acc2 = @ledger.create_account "CNY"
-    e = assert_raises do
-      @ledger.base_currency_forex_transfer acc0, acc1, 0, 10
-    end
+    acc1 = @ledger.create_account "CNY"
 
-    assert_match /^Amount can't be 0\.$/, e.message
-
-    e = assert_raises do
-      @ledger.base_currency_forex_transfer acc0, acc2, 100, 99
-    end
-
-    assert_match /^Forex transfer must be to or from an account of base currency\.$/,
-      e.message
+    @ledger.forex_transfer acc0, acc1, 100, 99
+    assert_equal -100, acc0.balance
+    assert_equal 99, acc1.balance
   end
 
   def test_dummy_account
