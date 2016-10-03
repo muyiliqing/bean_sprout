@@ -102,6 +102,7 @@ class BeanSprout::Transaction::Test < MiniTest::Test
     assert @transaction.respond_to? :commit
     assert @transaction.respond_to? :revert
     assert @transaction.respond_to? :entries
+    assert @transaction.respond_to? :local?
     assert @transaction.respond_to? :other_data
 
     refute @transaction.respond_to? :balanced!
@@ -145,5 +146,15 @@ class BeanSprout::Transaction::Test < MiniTest::Test
 
     @sprout_bunch.instance_variable_set(:@in_place, true)
     @transaction.revert
+  end
+
+  def test_local
+    assert @transaction.local?
+
+    bean = TestBean.new(:USD, [], [])
+    sprout = TestSprout.new(9, bean)
+    sprout_bunch = BeanSprout::SproutBunch.new(1, [sprout, @sprout0])
+    transaction = BeanSprout::Transaction.new(sprout_bunch)
+    refute transaction.local?
   end
 end

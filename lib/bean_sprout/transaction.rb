@@ -86,5 +86,13 @@ module BeanSprout
         end
       end
     end
+
+    # If this transaction only involves one local currency.
+    def local?
+      currency = sprouts[0].bean.currency
+      sprouts.inject(true) do |acc, sprout|
+        acc && sprout.bean.currency == currency
+      end
+    end
   end
 end
