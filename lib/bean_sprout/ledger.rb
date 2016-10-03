@@ -13,6 +13,7 @@ module BeanSprout
       @beans = SparseArray.new
       @sprout_bunches = SparseArray.new
       @sprouts = SparseArray.new
+      @dummy_accounts = {}
     end
 
     def create_account currency, other_data: nil
@@ -23,21 +24,14 @@ module BeanSprout
       Account.new(bean, other_data)
     end
 
-    def create_entry account, amount, rate = nil, other_data: nil
+    def create_entry account, amount, other_data: nil
       bean = get_target account
       if not @beans.has_key? bean.id
         raise "Unkown account #{bean.to_account} refered."
       end
 
-      if not (rate or bean.currency == base_currency)
-        raise "Rate must be specified if account is not in base currency " +
-          "#{base_currency}."
-      end
-      rate ||= 1
-
-
       sprout = @sprouts.store do |next_id|
-        Sprout.new(next_id, bean, amount, rate)
+        Sprout.new(next_id, bean, amount)
       end
 
       Entry.new(sprout, other_data)
@@ -62,21 +56,12 @@ module BeanSprout
       commit_entries [entry0, entry1]
     end
 
-    def base_currency_forex_transfer from_acc, to_acc, from_amount, to_amount
-      raise "Amount can't be 0." unless from_amount != 0 && to_amount != 0
-
-      rate0 = rate1 = nil
-      if from_acc.currency == @base_currency
-        rate1 = from_amount / to_amount
-      elsif to_acc.currency == @base_currency
-        rate0 = to_amount / from_amount
-      else
-        raise "Forex transfer must be to or from an account of base currency."
-      end
-
-      entry0 = create_entry from_acc, -from_amount, rate0
-      entry1 = create_entry to_acc, to_amount, rate1
-      commit_entries [entry0, entry1]
+    def forex_transfer from_acc, to_acc, from_amount, to_amount
+      entry0 = create_entry from_acc, -from_amount
+      entry1 = create_entry (dummy_account from_acc.currency), from_amount
+      entry2 = create_entry to_acc, to_amount
+      entry3 = create_entry (dummy_account to_acc.currency), -to_amount
+      commit_entries [entry0, entry1, entry2, entry3]
     end
 
     # TODO: clients can't access ID.
@@ -111,8 +96,10 @@ module BeanSprout
       end
     end
 
-    def dummy_account
-      @dummy_account ||= create_account @base_currency, other_data: "This is a dummy account."
+    def dummy_account currency = nil
+      currency ||= @base_currency
+      acc = create_account currency, other_data: "This is a dummy account for #{currency}."
+      @dummy_accounts[currency] ||= acc
     end
 
     private

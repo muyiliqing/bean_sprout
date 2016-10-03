@@ -2,7 +2,7 @@ require 'bean_sprout/transaction'
 require 'minitest/autorun'
 
 class BeanSprout::Transaction::Test < MiniTest::Test
-  class TestBean < Struct.new(:picked, :grown)
+  class TestBean < Struct.new(:currency, :picked, :grown)
     def pick sprout
       picked.push sprout
     end
@@ -12,11 +12,11 @@ class BeanSprout::Transaction::Test < MiniTest::Test
     end
   end
 
-  class TestSprout < Struct.new(:unified_amount, :bean)
+  class TestSprout < Struct.new(:amount, :bean)
   end
 
   def setup
-    @bean = TestBean.new([], [])
+    @bean = TestBean.new(:AUD, [], [])
     @sprout0 = TestSprout.new(9, @bean)
     @sprout1 = TestSprout.new(-8, @bean)
     @sprout2 = TestSprout.new(-1, @bean)
@@ -45,6 +45,18 @@ class BeanSprout::Transaction::Test < MiniTest::Test
       @unbalanced_bunch.balanced!
     end
     assert_match (/^\[.*\] not balanced\.$/), e.message
+  end
+
+  def test_sprout_bunch_multicurrency_balanced
+    usd_bean = TestBean.new(:USD, [], [])
+    usd_trans0 = TestSprout.new(198, usd_bean)
+    usd_trans1 = TestSprout.new(-198, usd_bean)
+
+    all_sprotus = @sprouts + [usd_trans0, usd_trans1]
+    multicurrency_trans = BeanSprout::SproutBunch.new(3, all_sprotus)
+
+    assert multicurrency_trans.balanced?
+    multicurrency_trans.balanced!
   end
 
   def test_sprout_bunch_plant
