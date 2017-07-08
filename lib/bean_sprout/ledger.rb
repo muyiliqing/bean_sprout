@@ -47,22 +47,22 @@ module BeanSprout
       Transaction.new(sprout_bunch, other_data)
     end
 
-    def transfer from_acc, to_acc, amount
+    def transfer from_acc, to_acc, amount, other_data: nil
       if from_acc.currency != to_acc.currency
         raise "Cannot transfer between two forex accounts."
       end
 
       entry0 = create_entry from_acc, -amount
       entry1 = create_entry to_acc, amount
-      commit_entries [entry0, entry1]
+      commit_entries [entry0, entry1], other_data
     end
 
-    def forex_transfer from_acc, to_acc, from_amount, to_amount
+    def forex_transfer from_acc, to_acc, from_amount, to_amount, other_data: nil
       entry0 = create_entry from_acc, -from_amount
       entry1 = create_entry (dummy_account from_acc.currency), from_amount
       entry2 = create_entry to_acc, to_amount
       entry3 = create_entry (dummy_account to_acc.currency), -to_amount
-      commit_entries [entry0, entry1, entry2, entry3]
+      commit_entries [entry0, entry1, entry2, entry3], other_data
     end
 
     # TODO: clients can't access ID.
@@ -108,9 +108,10 @@ module BeanSprout
       obj.instance_variable_get :@target
     end
 
-    def commit_entries entries
+    def commit_entries entries, other_data = nil
       trans = create_transaction entries
       trans.commit
+      trans.other_data = other_data
       trans
     end
   end
