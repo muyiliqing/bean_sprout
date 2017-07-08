@@ -17,6 +17,7 @@ module BeanSprout
     end
 
     def create_account currency, other_data: nil
+      currency ||= @base_currency
       bean = @beans.store do |next_id|
         Bean.new(next_id, currency)
       end
