@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    bean_sprout (0.0.5)
+    bean_sprout (0.0.6)
       rake (~> 10.4, >= 10.4.0)
 
 GEM
