@@ -46,11 +46,13 @@ class BeanSprout::Ledger::Test < MiniTest::Test
 
   def test_create_transaction
     account = @ledger.create_account("AUD")
-    entry = @ledger.create_entry(account, 10)
+    entry0 = @ledger.create_entry(account, 10)
+    entry1 = @ledger.create_entry(account, -10)
+    entries = [entry0, entry1]
 
-    trans = @ledger.create_transaction [@entry]
+    trans = @ledger.create_transaction entries
 
-    data_trans = @ledger.create_transaction [@entry], other_data: "somedata"
+    data_trans = @ledger.create_transaction entries, other_data: "somedata"
     assert_equal "somedata", data_trans.other_data
 
     sprout_bunches = @ledger.transactions.map do |trans| get_target trans end

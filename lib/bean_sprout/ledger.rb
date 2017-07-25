@@ -39,12 +39,7 @@ module BeanSprout
     end
 
     def create_transaction entries, other_data: nil
-      sprouts = entries.map do |entry| get_target entry end
-      sprout_bunch = @sprout_bunches.store do |next_id|
-        SproutBunch.new(next_id, sprouts)
-      end
-
-      Transaction.new(sprout_bunch, other_data)
+      commit_entries entries, other_data
     end
 
     def transfer from_acc, to_acc, amount, other_data: nil
@@ -109,9 +104,13 @@ module BeanSprout
     end
 
     def commit_entries entries, other_data = nil
-      trans = create_transaction entries
+      sprouts = entries.map do |entry| get_target entry end
+      sprout_bunch = @sprout_bunches.store do |next_id|
+        SproutBunch.new(next_id, sprouts)
+      end
+
+      trans = Transaction.new(sprout_bunch, other_data)
       trans.commit
-      trans.other_data = other_data
       trans
     end
   end
