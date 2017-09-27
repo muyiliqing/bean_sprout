@@ -1,13 +1,13 @@
 PATH
   remote: .
   specs:
-    bean_sprout (0.0.6)
+    bean_sprout (0.0.7)
       rake (~> 10.4, >= 10.4.0)
 
 GEM
   remote: https://rubygems.org/
   specs:
-    minitest (5.8.3)
+    minitest (5.10.3)
     rake (10.5.0)
 
 PLATFORMS
