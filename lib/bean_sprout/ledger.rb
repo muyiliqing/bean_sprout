@@ -13,7 +13,9 @@ module BeanSprout
       @beans = SparseArray.new
       @sprout_bunches = SparseArray.new
       @sprouts = SparseArray.new
-      @dummy_accounts = {}
+      @forex_accounts = {}
+      @income_accounts = {}
+      @expense_accounts = {}
     end
 
     def create_account currency, other_data: nil
@@ -54,9 +56,9 @@ module BeanSprout
 
     def forex_transfer from_acc, to_acc, from_amount, to_amount, other_data: nil
       entry0 = create_entry from_acc, -from_amount
-      entry1 = create_entry (dummy_account from_acc.currency), from_amount
+      entry1 = create_entry (forex_account from_acc.currency), from_amount
       entry2 = create_entry to_acc, to_amount
-      entry3 = create_entry (dummy_account to_acc.currency), -to_amount
+      entry3 = create_entry (forex_account to_acc.currency), -to_amount
       commit_entries [entry0, entry1, entry2, entry3], other_data
     end
 
@@ -92,10 +94,20 @@ module BeanSprout
       end
     end
 
-    def dummy_account currency = nil
+    def forex_account currency = nil
       currency ||= @base_currency
-      acc = create_account currency, other_data: "This is a dummy account for #{currency}."
-      @dummy_accounts[currency] ||= acc
+      acc = create_account currency, other_data: "This is a forex account for #{currency}."
+      @forex_accounts[currency] ||= acc
+    end
+
+    def income_account currency = nil
+      currency ||= @base_currency
+      @income_accounts[currency] ||= create_account currency, other_data: "This is an income account for #{currency}."
+    end
+
+    def expense_account currency = nil
+      currency ||= @base_currency
+      @expense_accounts[currency] ||= create_account currency, other_data: "This is an expense account for #{currency}."
     end
 
     private

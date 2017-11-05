@@ -105,9 +105,23 @@ class BeanSprout::Ledger::Test < MiniTest::Test
     assert_equal 99, acc1.balance
   end
 
-  def test_dummy_account
+  def test_forex_account
     acc0 = @ledger.create_account "AUD"
-    @ledger.transfer acc0, (@ledger.dummy_account), 10
+    @ledger.transfer acc0, (@ledger.forex_account), 10
+
+    assert_equal -10, acc0.balance
+  end
+
+  def test_income_account
+    acc0 = @ledger.create_account "AUD"
+    @ledger.transfer acc0, (@ledger.income_account), 10
+
+    assert_equal -10, acc0.balance
+  end
+
+  def test_expense_account
+    acc0 = @ledger.create_account "AUD"
+    @ledger.transfer acc0, (@ledger.expense_account), 10
 
     assert_equal -10, acc0.balance
   end
