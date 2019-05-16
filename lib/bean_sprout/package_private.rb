@@ -14,7 +14,7 @@ module BeanSprout
 
       def bind_public_interface public_interface
         raise "Cannot bind public interface to null." if public_interface.nil?
-        raise "Cannot bind public interface twice." unless @public_interface.nil?
+        raise "Cannot bind public interface twice." if defined? @public_interface
         @public_interface = public_interface
       end
 

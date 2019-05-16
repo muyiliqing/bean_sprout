@@ -24,7 +24,7 @@ class BeanSprout::ForwardableDelegate::Test < MiniTest::Test
     TestSubject.class_eval do
       def_private_default_delegators :push
       def mypush *arg
-        push *arg
+        push(*arg)
       end
     end
 

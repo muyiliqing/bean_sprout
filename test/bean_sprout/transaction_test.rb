@@ -66,22 +66,22 @@ class BeanSprout::Transaction::Test < MiniTest::Test
   end
 
   def test_sprout_bunch_plant_error
-    e = assert_raises BeanSprout::SproutBunch::NotBalancedError do
+    assert_raises BeanSprout::SproutBunch::NotBalancedError do
       @unbalanced_bunch.plant
     end
 
     @empty_bunch.plant
-    e = assert_raises BeanSprout::SproutBunch::IllegalStateError do
+    assert_raises BeanSprout::SproutBunch::IllegalStateError do
       @empty_bunch.plant
     end
   end
 
   def test_sprout_bunch_remove_error
-    e = assert_raises BeanSprout::SproutBunch::NotBalancedError do
+    assert_raises BeanSprout::SproutBunch::NotBalancedError do
       @unbalanced_bunch.remove
     end
 
-    e = assert_raises BeanSprout::SproutBunch::IllegalStateError do
+    assert_raises BeanSprout::SproutBunch::IllegalStateError do
       @empty_bunch.remove
     end
   end

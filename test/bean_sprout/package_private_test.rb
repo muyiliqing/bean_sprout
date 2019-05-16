@@ -35,11 +35,11 @@ class BeanSprout::PackagePrivate::Test < MiniTest::Test
     assert_equal "xyz", a.public_interface
 
     b = TestInternalClass.new
-    e = assert_raises do
+    assert_raises do
       b.bind_public_interface nil
     end
 
-    e = assert_raises do
+    assert_raises do
       a.bind_public_interface "123"
     end
   end

@@ -36,7 +36,7 @@ module BeanSprout
 
     def plant
       balanced!
-      raise IllegalStateError, "Can't plant twice." if @in_place
+      raise IllegalStateError, "Can't plant twice." if defined? @in_place
       sprouts.each do |sprout|
         sprout.bean.grow sprout
       end
@@ -45,7 +45,9 @@ module BeanSprout
 
     def remove
       balanced!
-      raise IllegalStateError, "Must plant before remove." unless @in_place
+      unless defined? @in_place
+        raise IllegalStateError, "Must plant before remove."
+      end
       sprouts.each do |sprout|
         sprout.bean.pick sprout
       end

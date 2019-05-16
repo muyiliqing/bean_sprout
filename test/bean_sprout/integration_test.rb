@@ -21,15 +21,15 @@ class BeanSprout::IntegrationTest < MiniTest::Test
   def test_commit_transaction
     @transaction0 = @ledger.create_transaction([@entry0, @entry1])
     assert_equal 15, @aud_account.balance
-    assert_equal -15, @dummy_account.balance
+    assert_equal (-15), @dummy_account.balance
     assert_equal 15, @aud_account.entries.first.amount
-    assert_equal -15, @dummy_account.entries.first.amount
+    assert_equal (-15), @dummy_account.entries.first.amount
 
     @transaction1 = @ledger.create_transaction([@entry2, @entry3, @entry20, @entry30])
     assert_equal 150, @usd_account.balance
-    assert_equal -217.5, @dummy_account.balance
+    assert_equal (-217.5), @dummy_account.balance
     assert_equal 150, @usd_account.entries.first.amount
-    assert_equal -15, @dummy_account.entries.first.amount
+    assert_equal (-15), @dummy_account.entries.first.amount
   end
 
   # TODO: test revert.

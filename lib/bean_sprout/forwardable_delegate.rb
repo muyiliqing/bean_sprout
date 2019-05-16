@@ -14,8 +14,8 @@ module BeanSprout
       end
 
       def def_private_default_delegators *args
-        def_default_delegators *args
-        private *args
+        def_default_delegators(*args)
+        private(*args)
       end
 
       private :def_default_delegators, :def_private_default_delegators

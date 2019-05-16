@@ -23,10 +23,10 @@ class BeanSprout::Entry::Test < MiniTest::Test
     assert_equal 17, @sprout.amount
 
     sprout = BeanSprout::Sprout.new(1, @bean, 1.9)
-    assert_equal BigDecimal.new("1.9"), sprout.amount
+    assert_equal BigDecimal("1.9"), sprout.amount
 
     sprout = BeanSprout::Sprout.new(1, @bean, 1000000000000.9)
-    assert_equal BigDecimal.new("1000000000000.9"), sprout.amount
+    assert_equal BigDecimal("1000000000000.9"), sprout.amount
   end
 
   def test_sprout_to_entry

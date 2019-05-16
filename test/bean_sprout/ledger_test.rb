@@ -26,7 +26,7 @@ class BeanSprout::Ledger::Test < MiniTest::Test
 
   def test_create_entry
     account = @ledger.create_account("AUD")
-    entry = @ledger.create_entry(account, 10)
+    _ = @ledger.create_entry(account, 10)
 
     data_entry = @ledger.create_entry account, 1, other_data: "some_data"
     assert_equal "some_data", data_entry.other_data
@@ -41,7 +41,7 @@ class BeanSprout::Ledger::Test < MiniTest::Test
       @ledger.create_entry account, 10
     end
 
-    assert_match /^Unkown account .* refered\.$/, e.message
+    assert_match(/^Unkown account .* refered\.$/, e.message)
   end
 
   def test_create_transaction
@@ -55,7 +55,7 @@ class BeanSprout::Ledger::Test < MiniTest::Test
     data_trans = @ledger.create_transaction entries, other_data: "somedata"
     assert_equal "somedata", data_trans.other_data
 
-    sprout_bunches = @ledger.transactions.map do |trans| get_target trans end
+    sprout_bunches = @ledger.transactions.map do |trans_| get_target trans_ end
 
     assert_equal 2, @ledger.transactions.size
     assert sprout_bunches.include? get_target trans
@@ -66,7 +66,7 @@ class BeanSprout::Ledger::Test < MiniTest::Test
     acc0 = @ledger.create_account "AUD"
     acc1 = @ledger.create_account "AUD"
     @ledger.transfer acc0, acc1, 100
-    assert_equal -100, acc0.balance
+    assert_equal (-100), acc0.balance
     assert_equal 100, acc1.balance
   end
 
@@ -74,7 +74,7 @@ class BeanSprout::Ledger::Test < MiniTest::Test
     acc0 = @ledger.create_account "USD"
     acc1 = @ledger.create_account "USD"
     @ledger.transfer acc0, acc1, 100
-    assert_equal -100, acc0.balance
+    assert_equal (-100), acc0.balance
     assert_equal 100, acc1.balance
   end
 
@@ -85,14 +85,14 @@ class BeanSprout::Ledger::Test < MiniTest::Test
       @ledger.transfer acc0, acc1, 100
     end
 
-    assert_match /^Cannot transfer between two forex accounts\.$/, e.message
+    assert_match(/^Cannot transfer between two forex accounts\.$/, e.message)
   end
 
   def test_base_currency_forex_transfer
     acc0 = @ledger.create_account "USD"
     acc1 = @ledger.create_account "AUD"
     @ledger.forex_transfer acc0, acc1, 50, 100
-    assert_equal -50, acc0.balance
+    assert_equal (-50), acc0.balance
     assert_equal 100, acc1.balance
   end
 
@@ -101,7 +101,7 @@ class BeanSprout::Ledger::Test < MiniTest::Test
     acc1 = @ledger.create_account "CNY"
 
     @ledger.forex_transfer acc0, acc1, 100, 99
-    assert_equal -100, acc0.balance
+    assert_equal (-100), acc0.balance
     assert_equal 99, acc1.balance
   end
 
@@ -109,21 +109,21 @@ class BeanSprout::Ledger::Test < MiniTest::Test
     acc0 = @ledger.create_account "AUD"
     @ledger.transfer acc0, (@ledger.forex_account), 10
 
-    assert_equal -10, acc0.balance
+    assert_equal (-10), acc0.balance
   end
 
   def test_income_account
     acc0 = @ledger.create_account "AUD"
     @ledger.transfer acc0, (@ledger.income_account), 10
 
-    assert_equal -10, acc0.balance
+    assert_equal (-10), acc0.balance
   end
 
   def test_expense_account
     acc0 = @ledger.create_account "AUD"
     @ledger.transfer acc0, (@ledger.expense_account), 10
 
-    assert_equal -10, acc0.balance
+    assert_equal (-10), acc0.balance
   end
 
   private
